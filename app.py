@@ -1,4 +1,11 @@
 from flask import Flask, render_template, request
+import pickle
+
+def model(cat , amt,city,pop,job):
+ with open('pipe.pkl', 'rb') as file:
+    fraud_model = pickle.load(file)
+    val = fraud_model.predict([[cat , amt  ,city , pop , job]])
+    return val
 
 app = Flask(__name__)
 
@@ -18,15 +25,11 @@ jobs = ['Contractor', 'Designer', 'exhibition/display', 'Electronics engineer',
         'Surveyor, minerals', 'Systems analyst', 'Tax inspector',
         'Water engineer', 'other']
 
-def preprocess_input(category, amt, state, city_pop, job):
-    # Add your preprocessing logic here
-    # This is a simple example, adjust it based on your needs
-    processed_input = [category, float(amt), state, int(city_pop), job]
-    return processed_input
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     prediction_result = None
+    with open('pipe.pkl', 'rb') as file:
+     fraud_model = pickle.load(file)
 
     if request.method == 'POST':
         # Handle form submission here
@@ -36,15 +39,7 @@ def index():
         city_pop = request.form.get('city_pop')
         job = request.form.get('job')
 
-        # Use preprocess_input to prepare the input for the model
-        processed_input = preprocess_input(category, amt, state, city_pop, job)
-
-        # Assuming you have a model loaded elsewhere in your code
-        # Replace this line with the actual prediction logic
-        #prediction = fraud_model.predict(processed_input)
-
-        # Placeholder for demonstration purposes
-        prediction = [0]
+        prediction = model(category , float(amt) , state , int(city_pop) , job)
 
         # Update the prediction result
         prediction_result = 'Fraud' if prediction[0] == 1 else 'Not Fraud'
