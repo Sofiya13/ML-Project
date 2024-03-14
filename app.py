@@ -41,7 +41,7 @@ def index():
 
         prediction = model(category , float(amt) , state , int(city_pop) , job)
 
-        # Update the prediction result
+        # Here I Update the prediction result
         prediction_result = 'Fraud' if prediction[0] == 1 else 'Not Fraud'
 
     return render_template('index.html', categories=categories, states=states, jobs=jobs, prediction_result=prediction_result)
